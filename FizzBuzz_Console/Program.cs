@@ -11,56 +11,67 @@ var serviceProvider = services.BuildServiceProvider();
 using var scope = serviceProvider.CreateScope();
 var divideCheck = scope.ServiceProvider.GetServices<IDivide>().ToList();
 
-string[] input = new string[7] { "1", "3","", "5", "15","A", "23"};
+Console.WriteLine("Input Comma seperated test values");
 
-for (int i = 0; i < input.Length; i++)
+string[]? input = Console.ReadLine()?.Split(',');
+Console.WriteLine("\n");
+
+// string[] input = new string[7] { "1", "3","", "5", "15","A", "23"};
+
+if(input != null && input.Length > 0)
 {
-    Result finalPrint = new Result();
-    finalPrint.Messages = new Dictionary<int, string>();
-    finalPrint.OperationMessages = new Dictionary<int, string>();
-    int value = 0;
-    if (Int32.TryParse(input[i], out value))
+    for (int i = 0; i < input.Length; i++)
     {
-        divideCheck.ForEach(e =>
+        Result finalPrint = new Result();
+        finalPrint.Messages = new Dictionary<int, string>();
+        finalPrint.OperationMessages = new Dictionary<int, string>();
+        int value = 0;
+        if (Int32.TryParse(input[i], out value))
         {
-            DivideResult result = e.Validate(value);
-            if(result.isDivisible) {
-                finalPrint.isDivisible = true;
-                if(result.Message != null)
-                {
-                    finalPrint.Messages.Add(result.index, result.Message);
-                }
-            }
-            finalPrint.OperationMessages.Add(result.index, result.OperationMessage);
-        });
-        if(finalPrint.isDivisible)
-        {
-            finalPrint.Messages.OrderBy(i => i.Key);
-            string mes="";
-            foreach (var item in finalPrint.Messages)
+            divideCheck.ForEach(e =>
             {
-                mes += item.Value.ToString();
+                DivideResult result = e.Validate(value);
+                if (result.isDivisible)
+                {
+                    finalPrint.isDivisible = true;
+                    if (result.Message != null)
+                    {
+                        finalPrint.Messages.Add(result.index, result.Message);
+                    }
+                }
+                finalPrint.OperationMessages.Add(result.index, result.OperationMessage);
+            });
+            if (finalPrint.isDivisible)
+            {
+                finalPrint.Messages.OrderBy(i => i.Key);
+                string mes = "";
+                foreach (var item in finalPrint.Messages)
+                {
+                    mes += item.Value.ToString();
+                }
+                Console.WriteLine(mes);
             }
-            Console.WriteLine(mes);
+            else
+            {
+                finalPrint.OperationMessages.OrderBy(i => i.Key);
+                string mes = "";
+                foreach (var item in finalPrint.OperationMessages)
+                {
+                    mes += item.Value.ToString() + "\n";
+                }
+                Console.WriteLine(mes);
+
+            }
         }
         else
         {
-            finalPrint.OperationMessages.OrderBy(i => i.Key);
-            string mes = "";
-            foreach (var item in finalPrint.OperationMessages)
-            {
-                mes += item.Value.ToString() + "\n";
-            }
-            Console.WriteLine(mes);
-
+            Console.WriteLine("Invalid Item");
         }
+
     }
-    else
-    {
-        Console.WriteLine("Invalid Item");
-    }
-    
 }
+
+
 
 Console.ReadLine();
 
